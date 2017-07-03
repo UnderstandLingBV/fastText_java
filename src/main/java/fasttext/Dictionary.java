@@ -416,6 +416,7 @@ public class Dictionary {
 		nwords_ = ioutil.readInt(ifs);
 		nlabels_ = ioutil.readInt(ifs);
 		ntokens_ = ioutil.readLong(ifs);
+		long pruneidx_size = ioutil.readLong(ifs);
 
 		word2int_ = new HashMap<Long, Integer>(size_);
 		words_ = new ArrayList<entry>(size_);

@@ -96,11 +96,11 @@ public class IOUtil {
 			string_bytes_[++i] = (byte) b;
 			b = is.read();
 			if (i == string_buf_size_ - 1) {
-				stringBuilder_.append(new String(string_bytes_));
+				stringBuilder_.append(new String(string_bytes_/*, "utf8"*/));
 				i = -1;
 			}
 		}
-		stringBuilder_.append(new String(string_bytes_, 0, i + 1));
+		stringBuilder_.append(new String(string_bytes_, 0, i + 1/*, "utf8"*/));
 		return stringBuilder_.toString();
 	}
 

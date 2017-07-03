@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import fasttext.Args.model_name;
+import fasttext.Dictionary.entry;
 import fasttext.Dictionary.entry_type;
-import fasttext.io.*;
+import fasttext.io.BufferedLineReader;
+import fasttext.io.LineReader;
 
 /**
  * FastText class, can be used as a lib in other projects
@@ -28,7 +30,7 @@ import fasttext.io.*;
  * @author Ivan
  *
  */
-public class FastText {
+public strictfp class FastText {
 
 	private Args args_;
 	private Dictionary dict_;
@@ -41,6 +43,16 @@ public class FastText {
 
 	private String charsetName_ = "UTF-8";
 	private Class<? extends LineReader> lineReaderClass_ = BufferedLineReader.class;
+	
+	public String[] getWords() {
+		List<entry> entries = dict_.getWords();
+		int n = entries.size();
+		String[] words = new String[n];
+		for (int i = 0; i < n; i++) {
+			words[i] = entries.get(i).word;
+		}
+		return words;
+	}
 
 	public void getVector(Vector vec, final String word) {
 		final List<Integer> ngrams = dict_.getNgrams(word);
@@ -144,9 +156,16 @@ public class FastText {
 			input_ = new Matrix();
 			output_ = new Matrix();
 
+			// Read magic number and version
+			IOUtil ioutil = new IOUtil();
+			int magic_number = ioutil.readInt(dis);
+			int version = ioutil.readInt(dis);
+			
 			args_.load(dis);
 			dict_.load(dis);
+			boolean quant = dis.readBoolean();
 			input_.load(dis);
+			quant = dis.readBoolean();
 			output_.load(dis);
 
 			model_ = new Model(input_, output_, args_, 0);
@@ -392,6 +411,24 @@ public class FastText {
 				}
 			}
 		}
+	}
+	
+	public Vector sentenceVectors(String[] tokens) {
+		Vector vec = new Vector(args_.dim);
+		Vector svec = new Vector(args_.dim);
+		svec.zero();
+		int count = 0;
+		for (int i=0; i < tokens.length; i++) {
+			getVector(vec, tokens[i]);
+			float norm = vec.norm();
+			if (norm != 0.0f) {
+				vec.mul((float) (1.0 / vec.norm()));
+				svec.addVector(vec);
+				count++;
+			}
+		}
+		svec.mul((float) (1.0 / count));
+		return svec;
 	}
 
 	public void printVectors() {

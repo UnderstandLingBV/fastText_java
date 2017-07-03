@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 
-public class Matrix {
+public strictfp class Matrix {
 
 	public float[][] data_ = null;
 	public int m_ = 0; // vocabSize

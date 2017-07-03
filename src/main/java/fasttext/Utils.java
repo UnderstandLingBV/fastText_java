@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.RandomAccess;
 
-public class Utils {
+public strictfp class Utils {
 
 	/**
 	 * Ensures the truth of an expression involving one or more parameters to

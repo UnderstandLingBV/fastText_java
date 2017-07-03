@@ -9,7 +9,7 @@ import java.util.Random;
 import fasttext.Args.loss_name;
 import fasttext.Args.model_name;
 
-public class Model {
+public strictfp class Model {
 
 	static final int SIGMOID_TABLE_SIZE = 512;
 	static final int MAX_SIGMOID = 8;

@@ -1,9 +1,23 @@
 package fasttext;
 
-public class Vector {
+public strictfp class Vector {
 
 	public int m_;
 	public float[] data_;
+
+	public void addVector(Vector source) {
+		for (int i = 0; i < m_; i++) {
+			data_[i] += source.data_[i];
+		}
+	}
+
+	public float norm() {
+		float sum = 0;
+		for (int i = 0; i < m_; i++) {
+			sum += data_[i] * data_[i];
+		}
+		return (float) Math.sqrt(sum);
+	}
 
 	public Vector(int size) {
 		m_ = size;
