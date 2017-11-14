@@ -430,9 +430,9 @@ public class Dictionary {
 			word2int_.put(find(e.word), i);
 		}
 		initTableDiscard();
-		if (model_name.cbow == args_.model || model_name.sg == args_.model) {
+		//if (model_name.cbow == args_.model || model_name.sg == args_.model) {
 			initNgrams();
-		}
+		//}
 	}
 
 	@Override

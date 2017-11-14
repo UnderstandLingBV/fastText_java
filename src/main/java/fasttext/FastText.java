@@ -141,14 +141,18 @@ public strictfp class FastText {
 	 * @throws IOException
 	 */
 	public void loadModel(String filename) throws IOException {
+		File file = new File(filename);
+		if (!(file.exists() && file.isFile() && file.canRead())) {
+			throw new IOException("Model file cannot be opened for loading! " + filename);
+		}
+		loadModel(new FileInputStream(file));
+	}
+	
+	public void loadModel(InputStream is) throws IOException {
 		DataInputStream dis = null;
 		BufferedInputStream bis = null;
 		try {
-			File file = new File(filename);
-			if (!(file.exists() && file.isFile() && file.canRead())) {
-				throw new IOException("Model file cannot be opened for loading!");
-			}
-			bis = new BufferedInputStream(new FileInputStream(file));
+			bis = new BufferedInputStream(is);
 			dis = new DataInputStream(bis);
 
 			args_ = new Args();
@@ -279,7 +283,7 @@ public strictfp class FastText {
 	 * @param k
 	 * @return
 	 */
-	public List<Pair<Float, String>> predict(String[] lineTokens, int k) {
+	public List<Pair<Double, String>> predict(String[] lineTokens, int k) {
 		List<Integer> words = new ArrayList<Integer>();
 		List<Integer> labels = new ArrayList<Integer>();
 		dict_.getLine(lineTokens, words, labels, model_.rng);
@@ -295,9 +299,9 @@ public strictfp class FastText {
 
 		model_.predict(words, k, modelPredictions, hidden, output);
 
-		List<Pair<Float, String>> predictions = new ArrayList<Pair<Float, String>>(k);
+		List<Pair<Double, String>> predictions = new ArrayList<Pair<Double, String>>(k);
 		for (Pair<Float, Integer> pair : modelPredictions) {
-			predictions.add(new Pair<Float, String>(pair.getKey(), dict_.getLabel(pair.getValue())));
+			predictions.add(new Pair<Double, String>(Math.exp(pair.getKey().doubleValue()), dict_.getLabel(pair.getValue())));
 		}
 		return predictions;
 	}
@@ -427,7 +431,8 @@ public strictfp class FastText {
 				count++;
 			}
 		}
-		svec.mul((float) (1.0 / count));
+		if (count != 0) svec.mul((float) (1.0 / count));
+		else svec.zero();
 		return svec;
 	}
 
